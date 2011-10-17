@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
     {
@@ -29,10 +30,11 @@ int main(int argc, char *argv[])
                 if ((connection = accept(sockfd, (struct sockaddr *) &server_address, &addrlen)) > 0 )
                     printf(">>> Client %i is connected...\n", inet_ntoa(server_address.sin_addr));
                 recv(connection, buffer, sizeof(buffer), 0);
-                printf("===========================<HEAD>=================================\n");
+                printf("===========================<HEADER>=================================\n");
                 printf("%s", buffer);
-                printf("===========================</HEAD>================================\n");
-                send(connection, "Hello World - Connection Succesfull!", 36, 0);
+                printf("===========================</HEADER>================================\n");
+                char msg[] = "<title>My Socket</title>Hello World - Connection Succesfull!";
+                send(connection, msg, sizeof(msg), 0);
                 close(connection);
                 close(sockfd);
             }
