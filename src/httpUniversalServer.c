@@ -13,7 +13,7 @@ void write_file(char*);
 int main(int argc, char *argv[])
     {
         int sockfd, connection, addrlen;
-        char *buffer, *msg, *line, *method, *path;
+        char *buffer;
         struct sockaddr_in server_address;
         DinamicArray *files, *aux;
         HTTPRequest* http_request;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
             {
                 server_address.sin_family = AF_INET;
                 server_address.sin_addr.s_addr = INADDR_ANY;
-                server_address.sin_port = htons(atoi("5000"));
+                server_address.sin_port = htons(atoi(argv[1]));
                 printf(">>> Bind Succesfull\n");
                 bind(sockfd, (struct sockaddr *) &server_address, sizeof(server_address));
                 printf(">>> Listening on port %s\n", argv[1]);
@@ -38,21 +38,21 @@ int main(int argc, char *argv[])
                 {
                     if ((connection = accept(sockfd, (struct sockaddr *) &server_address, &addrlen)) > 0 )
                         printf(">>> Client %i is requesting...\n", inet_ntoa(server_address.sin_addr));
-                    buffer = (char *) malloc(sizeof(char));
+                    buffer = (char *) malloc(1000);
                     recv(connection, buffer, 1000, 0);
                     printf("===========================<REQUISITION>=================================\n");
                     printf("%s", buffer);
-                    //write_file(buffer);
                     printf("===========================</REQUISITION>================================\n\n");
-                    msg = "<title>My Socket</title><p><h1>My Index</h1></p>";
-                    send(connection, msg, strlen(msg), 0);
-                    //http_request = parse_http_request(buffer);
-                    //printf("%s\n", http_request->path);
-                    files = list_dict(NULL);
+                    send(connection, "<title>My Socket</title><p><h1>My Index</h1></p>", 48, 0);
+                    http_request = parse_http_request(buffer);
+                    files = list_dict(http_request->path);
                     for (aux = files->next_element; aux != NULL; aux = aux->next_element)
                     {
-                        sprintf(msg, "<p><a href=./%s>%s</a></p>", aux->element, aux->element);
-                        send(connection, msg, strlen(msg), 0);
+						send(connection, "<p><a href=\"", 12, 0);
+						send(connection, aux->element, strlen(aux->element), 0);
+						send(connection, "\">", 2, 0);
+						send(connection, aux->element, strlen(aux->element), 0);
+						send(connection, "</a></p>", 8, 0);
                     }
                     close(connection);
                 }
@@ -60,12 +60,3 @@ int main(int argc, char *argv[])
             }
         exit(0);
     }
-
-void write_file(char * buffer) 
-{ 
-    FILE *file; 
-    file = fopen("file.txt","a+"); /* apend file (add text to 
-                                      a file or create a file if it does not exist.*/ 
-    fprintf(file,"%s", buffer); /*writes*/ 
-    fclose(file); /*done!*/ 
-}
