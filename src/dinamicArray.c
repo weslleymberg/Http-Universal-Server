@@ -13,9 +13,9 @@ void append(DinamicArray *list, char *item)
 {
     DinamicArray *new, *aux;
 
-    new = (DinamicArray *) malloc(sizeof(DinamicArray));
-    strcpy(new->element, item);
-    new->next_element = NULL;
+    new = create_array();
+    new->element = (char *) malloc(strlen(item));
+    strncpy(new->element, item, strlen(item));
 
     aux = list;
     while (aux->next_element != NULL)

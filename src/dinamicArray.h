@@ -2,7 +2,7 @@
 #define __DINAMICARREY_H__
 
 typedef struct DinamicArray{
-    char element[100];
+    char *element;
     struct DinamicArray *next_element;
 } DinamicArray;
 
